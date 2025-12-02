@@ -1,10 +1,7 @@
-name: SonarQube Scan (JavaScript/TypeScript)
+name: SonarQube Scan
 
 on:
   push:
-    branches:
-      - main
-  pull_request:
     branches:
       - main
 
@@ -13,30 +10,22 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
-      # Instalar Node (opcional si usas npm, vite, react, angular, etc.)
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
         with:
-          node-version: 18
+          java-version: '17'
+          distribution: 'temurin'
 
-      # Instalar dependencias del proyecto
-      - name: Install dependencies
-        run: npm install
+      - name: Cache SonarQube packages
+        uses: actions/cache@v3
+        with:
+          path: ~/.sonar/cache
+          key: ${{ runner.os }}-sonar
 
-      # Ejecutar SonarQube Scan
       - name: SonarQube Scan
-        uses: sonarsource/sonarqube-scan-action@v2
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-
-      # Verificar Quality Gate
-      - name: SonarQube Quality Gate
-        id: qualitygate
-        uses: sonarsource/sonarqube-quality-gate-action@v2
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-
+        uses: SonarSource/sonarqube-scan-action@v1
+        with:
+          host-url: ${{ secrets.SONAR_HOST_URL }}
+          token: ${{ secrets.SONAR_TOKEN }}
