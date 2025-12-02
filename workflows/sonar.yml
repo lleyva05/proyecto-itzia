@@ -1,9 +1,8 @@
-name: SonarQube Scan
+name: SonarCloud Scan
 
 on:
   push:
-    branches:
-      - main
+    branches: [ main ]
 
 jobs:
   sonar:
@@ -18,14 +17,14 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Cache SonarQube packages
+      - name: Cache Sonar packages
         uses: actions/cache@v4
         with:
           path: ~/.sonar/cache
           key: ${{ runner.os }}-sonar
 
-      - name: SonarQube Scan
+      - name: SonarCloud Scan
         uses: sonarsource/sonarqube-scan-action@v3
-        with:
-          host-url: ${{ secrets.SONAR_HOST_URL }}
-          token: ${{ secrets.SONAR_TOKEN }}
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
